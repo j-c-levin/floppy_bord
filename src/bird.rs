@@ -1,3 +1,4 @@
+use std::usize;
 use bevy::prelude::*;
 use crate::{AnimationIndices, AnimationTimer};
 use crate::gravity::{Gravity, Velocity};
@@ -9,7 +10,7 @@ impl Plugin for BirdPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_systems(Startup, setup)
-            .add_systems(Update, animate_sprite);
+            .add_systems(Update, (animate_sprite, rotate_bird));
     }
 }
 
@@ -17,9 +18,11 @@ const BIRD_SIZE: f32 = 16.0;
 const BIRD_ATLAS_COLUMNS: usize = 4;
 const BIRD_ATLAS_ROWS: usize = 1;
 const BIRD_ANIMATION_SPEED: f32 = 0.1;
-const BIRD_GRAVITY: Vec2 = Vec2::new(0.0, -3000.0);
-
+const BIRD_GRAVITY: f32 = -3000.0;
 const JUMP_SPEED: f32 = 800.0;
+const ROTATE_UP_ANGLE: f32 = 30.0;
+const ROTATE_DOWN_ANGLE: f32 = -90.0;
+const ROTATE_DOWN_THRESHOLD: f32 = -500.0;
 
 fn setup(
     mut commands: Commands,
@@ -48,7 +51,7 @@ fn setup(
         },
         animation_indices,
         AnimationTimer(Timer::from_seconds(BIRD_ANIMATION_SPEED, TimerMode::Repeating)),
-        Gravity::new(BIRD_GRAVITY),
+        Gravity::new(Vec2::new(0.0, BIRD_GRAVITY)),
         Velocity::new(Vec2::ZERO),
         Jump::new(JUMP_SPEED)
     ));
@@ -72,4 +75,22 @@ fn animate_sprite(
             };
         }
     }
+}
+
+fn rotate_bird(
+    mut bird: Query<(&mut Transform, &Velocity), With<Gravity>>
+) {
+    let Ok((mut transform, velocity)) = bird.get_single_mut() else {
+        println!("rotate_bird: couldn't find bird");
+        return
+    };
+
+    println!("velocity: {} thresholdeR: {}", velocity.velocity.y, ROTATE_DOWN_THRESHOLD);
+    if velocity.velocity.y > ROTATE_DOWN_THRESHOLD {
+        transform.rotation = Quat::from_rotation_z(f32::to_radians(ROTATE_UP_ANGLE));
+    } else {
+        transform.rotation = Quat::from_rotation_z(f32::to_radians(ROTATE_DOWN_ANGLE));
+    }
+
+
 }
