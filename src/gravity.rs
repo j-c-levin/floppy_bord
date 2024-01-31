@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-
 pub struct GravityPlugin;
 
 impl Plugin for GravityPlugin {

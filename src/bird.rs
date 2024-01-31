@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use crate::{AnimationIndices, AnimationTimer};
 use crate::gravity::{Gravity, Velocity};
+use crate::input::Jump;
 
 pub struct BirdPlugin;
 
@@ -16,7 +17,9 @@ const BIRD_SIZE: f32 = 16.0;
 const BIRD_ATLAS_COLUMNS: usize = 4;
 const BIRD_ATLAS_ROWS: usize = 1;
 const BIRD_ANIMATION_SPEED: f32 = 0.1;
-const BIRD_GRAVITY: Vec2 = Vec2::new(0.0, -2000.0);
+const BIRD_GRAVITY: Vec2 = Vec2::new(0.0, -3000.0);
+
+const JUMP_SPEED: f32 = 800.0;
 
 fn setup(
     mut commands: Commands,
@@ -46,7 +49,8 @@ fn setup(
         animation_indices,
         AnimationTimer(Timer::from_seconds(BIRD_ANIMATION_SPEED, TimerMode::Repeating)),
         Gravity::new(BIRD_GRAVITY),
-        Velocity::new(Vec2::ZERO)
+        Velocity::new(Vec2::ZERO),
+        Jump::new(JUMP_SPEED)
     ));
 }
 

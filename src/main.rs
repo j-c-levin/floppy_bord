@@ -3,11 +3,13 @@ mod quit;
 mod asset_loader;
 mod bird;
 mod gravity;
+mod input;
 
 use bevy::prelude::*;
 use crate::bird::BirdPlugin;
 use crate::camera::CameraPlugin;
 use crate::gravity::GravityPlugin;
+use crate::input::InputPlugin;
 use crate::quit::QuitPlugin;
 
 #[derive(Component)]
@@ -44,5 +46,6 @@ fn main() {
         .add_plugins(QuitPlugin)
         .add_plugins(BirdPlugin)
         .add_plugins(GravityPlugin)
+        .add_plugins(InputPlugin)
         .run();
 }
