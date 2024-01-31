@@ -4,7 +4,11 @@ pub struct GravityPlugin;
 
 impl Plugin for GravityPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, apply_gravity);
+        app.add_systems(Update,
+                        (
+                            apply_gravity, apply_velocity
+                        ).chain(),
+        );
     }
 }
 
@@ -32,13 +36,22 @@ impl Velocity {
 
 fn apply_gravity(
     mut bird: Query<(&Gravity, &mut Velocity)>,
-    time: Res<Time>
+    time: Res<Time>,
 ) {
     let Ok((gravity, mut velocity)) = bird.get_single_mut() else {
+        println!("apply_gravity: couldn't find bird");
         return;
     };
 
     velocity.velocity += gravity.acceleration * time.delta_seconds();
 }
 
-fn apply_
+fn apply_velocity(
+    mut query: Query<(&Velocity, &mut Transform)>,
+    time: Res<Time>,
+) {
+    for (velocity, mut transform) in query.iter_mut() {
+        transform.translation.x += velocity.velocity.x * time.delta_seconds();
+        transform.translation.y += velocity.velocity.y * time.delta_seconds();
+    }
+}

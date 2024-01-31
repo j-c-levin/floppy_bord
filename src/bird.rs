@@ -12,6 +12,12 @@ impl Plugin for BirdPlugin {
     }
 }
 
+const BIRD_SIZE: f32 = 16.0;
+const BIRD_ATLAS_COLUMNS: usize = 4;
+const BIRD_ATLAS_ROWS: usize = 1;
+const BIRD_ANIMATION_SPEED: f32 = 0.1;
+const BIRD_GRAVITY: Vec2 = Vec2::new(0.0, -2000.0);
+
 fn setup(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -20,9 +26,9 @@ fn setup(
     let texture_handle = asset_server.load("bird.png");
     let texture_atlas = TextureAtlas::from_grid(
         texture_handle,
-        Vec2::new(16.0, 16.0),
-        4,
-        1,
+        Vec2::splat(BIRD_SIZE),
+        BIRD_ATLAS_COLUMNS,
+        BIRD_ATLAS_ROWS,
         None,
         None,
     );
@@ -34,13 +40,13 @@ fn setup(
         SpriteSheetBundle {
             sprite: TextureAtlasSprite::new(animation_indices.first),
             texture_atlas: texture_atlas_handle,
-            transform: Transform::from_scale(Vec3::splat(6.0)),
+            transform: Transform::from_scale(Vec3::splat(3.0)),
             ..default()
         },
         animation_indices,
-        AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
-        Gravity::new(Vec2::new(0.0, 5.0)),
-        Velocity::new(Vec2::splat(0.0))
+        AnimationTimer(Timer::from_seconds(BIRD_ANIMATION_SPEED, TimerMode::Repeating)),
+        Gravity::new(BIRD_GRAVITY),
+        Velocity::new(Vec2::ZERO)
     ));
 }
 
