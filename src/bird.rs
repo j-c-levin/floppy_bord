@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use crate::{AnimationIndices, AnimationTimer};
+use crate::gravity::{Gravity, Velocity};
 
 pub struct BirdPlugin;
 
@@ -37,7 +38,9 @@ fn setup(
             ..default()
         },
         animation_indices,
-        AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating))
+        AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
+        Gravity::new(Vec2::new(0.0, 5.0)),
+        Velocity::new(Vec2::splat(0.0))
     ));
 }
 

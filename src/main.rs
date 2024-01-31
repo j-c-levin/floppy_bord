@@ -2,10 +2,12 @@ mod camera;
 mod quit;
 mod asset_loader;
 mod bird;
+mod gravity;
 
 use bevy::prelude::*;
 use crate::bird::BirdPlugin;
 use crate::camera::CameraPlugin;
+use crate::gravity::GravityPlugin;
 use crate::quit::QuitPlugin;
 
 #[derive(Component)]
@@ -26,7 +28,7 @@ fn main() {
                 .set(WindowPlugin {
                     primary_window: Some(Window {
                         title: "Floppy Bord".into(),
-                        resolution: (500., 300.).into(),
+                        resolution: (500., 800.).into(),
                         position: WindowPosition::At(IVec2::from((10, 10))),
                         enabled_buttons: bevy::window::EnabledButtons {
                             maximize: false,
@@ -41,5 +43,6 @@ fn main() {
         .add_plugins(CameraPlugin)
         .add_plugins(QuitPlugin)
         .add_plugins(BirdPlugin)
+        .add_plugins(GravityPlugin)
         .run();
 }
