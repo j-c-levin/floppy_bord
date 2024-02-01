@@ -23,6 +23,8 @@ const JUMP_SPEED: f32 = 800.0;
 const ROTATE_UP_ANGLE: f32 = 30.0;
 const ROTATE_DOWN_ANGLE: f32 = -90.0;
 const ROTATE_DOWN_THRESHOLD: f32 = -500.0;
+const ROTATE_UP_SPEED: f32 = 500.0;
+const ROTATE_DOWN_SPEED: f32 = -400.0;
 
 fn setup(
     mut commands: Commands,
@@ -78,19 +80,34 @@ fn animate_sprite(
 }
 
 fn rotate_bird(
-    mut bird: Query<(&mut Transform, &Velocity), With<Gravity>>
+    mut bird: Query<(&mut Transform, &Velocity), With<Gravity>>,
+    time: Res<Time>,
 ) {
     let Ok((mut transform, velocity)) = bird.get_single_mut() else {
         println!("rotate_bird: couldn't find bird");
-        return
+        return;
     };
 
-    println!("velocity: {} thresholdeR: {}", velocity.velocity.y, ROTATE_DOWN_THRESHOLD);
-    if velocity.velocity.y > ROTATE_DOWN_THRESHOLD {
-        transform.rotation = Quat::from_rotation_z(f32::to_radians(ROTATE_UP_ANGLE));
+    let bird_angle = transform.rotation.to_euler(EulerRot::XYZ).2.to_degrees();
+    let is_rising = velocity.velocity.y > ROTATE_DOWN_THRESHOLD;
+    let (mut rotation_amount, rotation_max) = if is_rising {
+        (f32::to_radians(ROTATE_UP_SPEED), ROTATE_UP_ANGLE)
     } else {
-        transform.rotation = Quat::from_rotation_z(f32::to_radians(ROTATE_DOWN_ANGLE));
+        (f32::to_radians(ROTATE_DOWN_SPEED), ROTATE_DOWN_ANGLE)
+    };
+
+    rotation_amount *= time.delta_seconds();
+
+    let smoothly_rotate = if is_rising {
+        bird_angle < rotation_max
+    } else {
+        bird_angle > rotation_max
+    };
+
+    // smoothly rotate or snap to max
+    if smoothly_rotate {
+        transform.rotate_z(rotation_amount);
+    } else {
+        transform.rotation = Quat::from_rotation_z(f32::to_radians(rotation_max));
     }
-
-
 }
