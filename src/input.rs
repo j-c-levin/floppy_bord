@@ -1,17 +1,20 @@
 use bevy::input::touch::TouchPhase;
 use bevy::prelude::*;
 use crate::gravity::{Gravity, Velocity};
+use crate::state::GameState;
 
 pub struct InputPlugin;
 
 impl Plugin for InputPlugin {
     fn build(&self, app: &mut App) {
         app
-            .add_systems(Update,
-                         (
-                             (jump_space, jump_tap),
-                             apply_jump
-                         ).chain(),
+            .add_systems(
+                Update,
+                (
+                    (jump_space, jump_tap),
+                    apply_jump.run_if(in_state(GameState::InGame))
+                )
+                    .chain(),
             )
             .add_event::<JumpEvent>();
     }
@@ -48,7 +51,7 @@ fn jump_tap(
         match touch.phase {
             TouchPhase::Started => {
                 jump_event_writer.send(JumpEvent);
-            },
+            }
             _ => { /* do nothing */ }
         }
     }
@@ -68,7 +71,7 @@ mod test {
         app.add_event::<JumpEvent>();
         app.add_event::<TouchInput>();
 
-         // Add our systems
+        // Add our systems
         app.add_systems(Update, jump_tap);
 
         app.world
@@ -159,7 +162,7 @@ fn apply_jump(
     mut bird: Query<(&mut Velocity, &Jump), With<Gravity>>,
 ) {
     let Ok((mut velocity, jump)) = bird.get_single_mut() else {
-        println!("jump: could not find bird");
+        println!("apply jump: could not find bird");
         return;
     };
 

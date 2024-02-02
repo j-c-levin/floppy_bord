@@ -13,7 +13,11 @@ impl Plugin for BirdPlugin {
             .add_systems(Startup, setup)
             .add_systems(
                 Update,
-                (animate_sprite, rotate_bird)
+                (
+                    lost_bird,
+                    (animate_sprite, rotate_bird)
+                )
+                    .chain()
                     .run_if(in_state(GameState::InGame)),
             );
     }
@@ -30,6 +34,8 @@ const ROTATE_DOWN_ANGLE: f32 = -90.0;
 const ROTATE_DOWN_THRESHOLD: f32 = -500.0;
 const ROTATE_UP_SPEED: f32 = 500.0;
 const ROTATE_DOWN_SPEED: f32 = -400.0;
+
+const BIRD_DESPAWN_DISTANCE: f32 = 850.0;
 
 fn setup(
     mut commands: Commands,
@@ -114,5 +120,20 @@ fn rotate_bird(
         transform.rotate_z(rotation_amount);
     } else {
         transform.rotation = Quat::from_rotation_z(f32::to_radians(rotation_max));
+    }
+}
+
+fn lost_bird(
+    bird: Query<(&GlobalTransform), With<Gravity>>,
+    mut next_state: ResMut<NextState<GameState>>
+) {
+    let Ok(transform) = bird.get_single() else {
+        println!("lost_bird: could not find bird!");
+        return
+    };
+    let distance = transform.translation().distance(Vec3::ZERO);
+
+    if distance > BIRD_DESPAWN_DISTANCE {
+        next_state.set(GameState::GameOver);
     }
 }
