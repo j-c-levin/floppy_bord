@@ -4,6 +4,8 @@ mod asset_loader;
 mod bird;
 mod gravity;
 mod input;
+mod state;
+mod window;
 
 use bevy::prelude::*;
 use crate::bird::BirdPlugin;
@@ -11,6 +13,8 @@ use crate::camera::CameraPlugin;
 use crate::gravity::GravityPlugin;
 use crate::input::InputPlugin;
 use crate::quit::QuitPlugin;
+use crate::state::StatePlugin;
+use crate::window::WindowPlugin;
 
 #[derive(Component)]
 struct AnimationIndices {
@@ -23,29 +27,12 @@ struct AnimationTimer(Timer);
 
 fn main() {
     App::new()
-        // Bevy built-ins
-        .add_plugins(
-            DefaultPlugins
-                .set(ImagePlugin::default_nearest())
-                .set(WindowPlugin {
-                    primary_window: Some(Window {
-                        title: "Floppy Bord".into(),
-                        resolution: (500., 800.).into(),
-                        position: WindowPosition::At(IVec2::from((10, 10))),
-                        enabled_buttons: bevy::window::EnabledButtons {
-                            maximize: false,
-                            ..Default::default()
-                        },
-                        ..default()
-                    }),
-                    ..default()
-                }),
-        )
-// User defined
+        .add_plugins(WindowPlugin)
         .add_plugins(CameraPlugin)
         .add_plugins(QuitPlugin)
         .add_plugins(BirdPlugin)
         .add_plugins(GravityPlugin)
         .add_plugins(InputPlugin)
+        .add_plugins(StatePlugin)
         .run();
 }
