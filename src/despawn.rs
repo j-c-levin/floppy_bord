@@ -6,13 +6,15 @@ pub struct DespawnPlugin;
 
 impl Plugin for DespawnPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(
-            Update,
-            (
+        app
+            .add_systems(
+                Update,
                 despawn_far_away_entities.run_if(in_state(GameState::InGame)),
-                despawn_all_entities.run_if(in_state(GameState::GameOver))
-            ),
-        );
+            )
+            .add_systems(
+                OnEnter(GameState::GameOver),
+                despawn_all_entities,
+            );
     }
 }
 

@@ -11,6 +11,7 @@ impl Plugin for BirdPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_systems(Startup, setup)
+            .add_systems(OnEnter(GameState::GameOver), setup)
             .add_systems(
                 Update,
                 (
@@ -124,12 +125,12 @@ fn rotate_bird(
 }
 
 fn lost_bird(
-    bird: Query<(&GlobalTransform), With<Gravity>>,
-    mut next_state: ResMut<NextState<GameState>>
+    bird: Query<&GlobalTransform, With<Gravity>>,
+    mut next_state: ResMut<NextState<GameState>>,
 ) {
     let Ok(transform) = bird.get_single() else {
         println!("lost_bird: could not find bird!");
-        return
+        return;
     };
     let distance = transform.translation().distance(Vec3::ZERO);
 
