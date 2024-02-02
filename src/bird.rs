@@ -3,6 +3,7 @@ use bevy::prelude::*;
 use crate::{AnimationIndices, AnimationTimer};
 use crate::gravity::{Gravity, Velocity};
 use crate::input::Jump;
+use crate::state::GameState;
 
 pub struct BirdPlugin;
 
@@ -10,7 +11,11 @@ impl Plugin for BirdPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_systems(Startup, setup)
-            .add_systems(Update, (animate_sprite, rotate_bird));
+            .add_systems(
+                Update,
+                (animate_sprite, rotate_bird)
+                    .run_if(in_state(GameState::InGame)),
+            );
     }
 }
 

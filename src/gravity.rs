@@ -1,12 +1,15 @@
 use bevy::prelude::*;
+use crate::state::GameState;
+
 pub struct GravityPlugin;
 
 impl Plugin for GravityPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update,
-                        (
-                            apply_gravity, apply_velocity
-                        ).chain(),
+        app.add_systems(
+            Update,
+            (apply_gravity, apply_velocity)
+                .chain()
+                .run_if(in_state(GameState::InGame)),
         );
     }
 }
