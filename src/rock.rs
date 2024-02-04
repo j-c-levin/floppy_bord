@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use crate::gravity::Velocity;
 use crate::state::GameState;
 
 const SPAWN_TIME_SECONDS: f32 = 2.0;
@@ -28,7 +29,7 @@ fn spawn_rocks_on_timer(
     mut command: Commands,
     mut timer: ResMut<SpawnTimer>,
     time: Res<Time>,
-    asset_server: Res<AssetServer>
+    asset_server: Res<AssetServer>,
 ) {
     timer.timer.tick(time.delta());
     if !timer.timer.just_finished() {
@@ -37,7 +38,8 @@ fn spawn_rocks_on_timer(
 
     command.spawn((
         Rock,
-        SpriteBundle{
+        Velocity { velocity: Vec2::from((-100.0, 0.0)) },
+        SpriteBundle {
             texture: asset_server.load("rockGrass.png"),
             ..default()
         }
