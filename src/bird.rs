@@ -1,6 +1,5 @@
 use std::usize;
 use bevy::prelude::*;
-use crate::{AnimationIndices, AnimationTimer};
 use crate::gravity::{Gravity, Velocity};
 use crate::input::Jump;
 use crate::state::GameState;
@@ -23,6 +22,15 @@ impl Plugin for BirdPlugin {
             );
     }
 }
+
+#[derive(Component)]
+struct AnimationIndices {
+    first: usize,
+    last: usize,
+}
+
+#[derive(Component)]
+struct AnimationTimer(Timer);
 
 const BIRD_SIZE: f32 = 16.0;
 const BIRD_ATLAS_COLUMNS: usize = 4;
