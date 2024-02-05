@@ -25,6 +25,10 @@ struct SpawnTimer {
     timer: Timer,
 }
 
+const ROCK_X: f32 = 0.0;
+const ROCK_Y: f32 = -280.0;
+const ROCK_SPEED: f32 = -100.0;
+
 fn spawn_rocks_on_timer(
     mut command: Commands,
     mut timer: ResMut<SpawnTimer>,
@@ -38,9 +42,24 @@ fn spawn_rocks_on_timer(
 
     command.spawn((
         Rock,
-        Velocity { velocity: Vec2::from((-100.0, 0.0)) },
+        Velocity { velocity: Vec2::from((ROCK_SPEED, 0.0)) },
         SpriteBundle {
+            transform: Transform::from_xyz(ROCK_X, ROCK_Y, 0.0),
             texture: asset_server.load("rockGrass.png"),
+            ..default()
+        }
+    ));
+
+    command.spawn((
+        Rock,
+        Velocity { velocity: Vec2::from((ROCK_SPEED, 0.0)) },
+        SpriteBundle {
+            transform: Transform::from_xyz(ROCK_X, -ROCK_Y, 0.0),
+            texture: asset_server.load("rockGrass.png"),
+            sprite: Sprite {
+                flip_y: true,
+                ..default()
+            },
             ..default()
         }
     ));
