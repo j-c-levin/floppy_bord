@@ -17,6 +17,7 @@ use crate::quit::QuitPlugin;
 use crate::rock::RockPlugin;
 use crate::state::StatePlugin;
 use crate::window::WindowPlugin;
+use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 fn main() {
     App::new()
@@ -28,5 +29,6 @@ fn main() {
         .add_plugins(InputPlugin)
         .add_plugins(StatePlugin)
         .add_plugins(RockPlugin)
+        .add_plugins(WorldInspectorPlugin::new())
         .run();
 }

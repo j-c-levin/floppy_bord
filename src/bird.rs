@@ -63,6 +63,7 @@ fn setup(
 
     let animation_indices = AnimationIndices { first: 0, last: 3 };
 
+    // Spawn bird
     commands.spawn((
         SpriteSheetBundle {
             sprite: TextureAtlasSprite::new(animation_indices.first),
@@ -74,7 +75,8 @@ fn setup(
         AnimationTimer(Timer::from_seconds(BIRD_ANIMATION_SPEED, TimerMode::Repeating)),
         Gravity::new(Vec2::new(0.0, BIRD_GRAVITY)),
         Velocity::new(Vec2::ZERO),
-        Jump::new(JUMP_SPEED)
+        Jump::new(JUMP_SPEED),
+        Name::new("Bord")
     ));
 }
 

@@ -1,10 +1,24 @@
 use bevy::prelude::*;
 use crate::gravity::Velocity;
 use crate::state::GameState;
-
-const SPAWN_TIME_SECONDS: f32 = 2.0;
+use rand::Rng;
 
 pub struct RockPlugin;
+
+#[derive(Component)]
+pub struct Rock;
+
+#[derive(Resource)]
+struct SpawnTimer {
+    timer: Timer,
+}
+const SPAWN_TIME_SECONDS: f32 = 3.0;
+const ROCK_X: f32 = 300.0;
+const ROCK_Y_HIGH: f32 = -94.0;
+const ROCK_Y_LOW: f32 = -650.0;
+const ROCK_SPEED: f32 = -120.0;
+const ROCK_Y_SCALE: f32 = 2.6;
+const ROCK_GAP: f32 = 770.0;
 
 impl Plugin for RockPlugin {
     fn build(&self, app: &mut App) {
@@ -17,18 +31,6 @@ impl Plugin for RockPlugin {
     }
 }
 
-#[derive(Component)]
-pub struct Rock;
-
-#[derive(Resource)]
-struct SpawnTimer {
-    timer: Timer,
-}
-
-const ROCK_X: f32 = 0.0;
-const ROCK_Y: f32 = -280.0;
-const ROCK_SPEED: f32 = -100.0;
-
 fn spawn_rocks_on_timer(
     mut command: Commands,
     mut timer: ResMut<SpawnTimer>,
@@ -40,29 +42,40 @@ fn spawn_rocks_on_timer(
         return;
     }
 
-    command.spawn((
-        Rock,
-        Velocity { velocity: Vec2::from((ROCK_SPEED, 0.0)) },
-        SpriteBundle {
-            transform: Transform::from_xyz(ROCK_X, ROCK_Y, 0.0),
-            texture: asset_server.load("rockGrass.png"),
-            ..default()
-        }
-    ));
+    let handle = asset_server.load("rockGrass.png");
 
-    command.spawn((
+    let mut rng = rand::thread_rng();
+    let random_y = rng.gen_range(ROCK_Y_LOW..ROCK_Y_HIGH);
+
+    // spawn bottom rock
+    command.spawn(rock_bundle(true, handle.clone(), random_y));
+
+    // spawn top rock
+    command.spawn(rock_bundle(false, handle.clone(), random_y));
+}
+
+fn rock_bundle(bottom: bool, texture: Handle<Image>, random_y: f32) -> (Rock, Velocity, SpriteBundle, Name) {
+    let position = if bottom { random_y } else { random_y + ROCK_GAP };
+    let name = if bottom { "bottom_rock" } else { "top_rock" };
+
+    (
         Rock,
         Velocity { velocity: Vec2::from((ROCK_SPEED, 0.0)) },
         SpriteBundle {
-            transform: Transform::from_xyz(ROCK_X, -ROCK_Y, 0.0),
-            texture: asset_server.load("rockGrass.png"),
+            transform: Transform {
+                translation: Vec3::new(ROCK_X, position, 0.0),
+                scale: Vec3::new(1.0, ROCK_Y_SCALE, 1.0),
+                ..default()
+            },
+            texture,
             sprite: Sprite {
-                flip_y: true,
+                flip_y: !bottom,
                 ..default()
             },
             ..default()
-        }
-    ));
+        },
+        Name::new(name)
+    )
 }
 
 fn reset_timer(
