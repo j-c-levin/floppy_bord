@@ -6,23 +6,6 @@ use crate::state::GameState;
 
 pub struct BirdPlugin;
 
-impl Plugin for BirdPlugin {
-    fn build(&self, app: &mut App) {
-        app
-            .add_systems(Startup, setup)
-            .add_systems(OnEnter(GameState::GameOver), setup)
-            .add_systems(
-                Update,
-                (
-                    lost_bird,
-                    (animate_sprite, rotate_bird)
-                )
-                    .chain()
-                    .run_if(in_state(GameState::InGame)),
-            );
-    }
-}
-
 #[derive(Component)]
 struct AnimationIndices {
     first: usize,
@@ -43,8 +26,24 @@ const ROTATE_DOWN_ANGLE: f32 = -90.0;
 const ROTATE_DOWN_THRESHOLD: f32 = -500.0;
 const ROTATE_UP_SPEED: f32 = 500.0;
 const ROTATE_DOWN_SPEED: f32 = -400.0;
-
 const BIRD_DESPAWN_DISTANCE: f32 = 850.0;
+
+impl Plugin for BirdPlugin {
+    fn build(&self, app: &mut App) {
+        app
+            .add_systems(Startup, setup)
+            .add_systems(OnEnter(GameState::GameOver), setup)
+            .add_systems(
+                Update,
+                (
+                    lost_bird,
+                    (animate_sprite, rotate_bird)
+                )
+                    .chain()
+                    .run_if(in_state(GameState::InGame)),
+            );
+    }
+}
 
 fn setup(
     mut commands: Commands,
@@ -133,16 +132,18 @@ fn rotate_bird(
 }
 
 fn lost_bird(
-    bird: Query<&GlobalTransform, With<Gravity>>,
+    mut commands: Commands,
+    bird: Query<(&GlobalTransform, Entity), With<Gravity>>,
     mut next_state: ResMut<NextState<GameState>>,
 ) {
-    let Ok(transform) = bird.get_single() else {
+    let Ok((transform, entity)) = bird.get_single() else {
         println!("lost_bird: could not find bird!");
         return;
     };
     let distance = transform.translation().distance(Vec3::ZERO);
 
     if distance > BIRD_DESPAWN_DISTANCE {
+        commands.entity(entity).despawn_recursive();
         next_state.set(GameState::GameOver);
     }
 }

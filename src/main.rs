@@ -11,7 +11,6 @@ mod rock;
 use bevy::prelude::*;
 use crate::bird::BirdPlugin;
 use crate::camera::CameraPlugin;
-use crate::despawn::DespawnPlugin;
 use crate::gravity::GravityPlugin;
 use crate::input::InputPlugin;
 use crate::quit::QuitPlugin;
@@ -28,7 +27,6 @@ fn main() {
         .add_plugins(GravityPlugin)
         .add_plugins(InputPlugin)
         .add_plugins(StatePlugin)
-        .add_plugins(DespawnPlugin)
         .add_plugins(RockPlugin)
         .run();
 }
