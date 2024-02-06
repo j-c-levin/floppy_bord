@@ -10,11 +10,20 @@ impl Plugin for InputPlugin {
         app
             .add_systems(
                 Update,
+                start_game.run_if(in_state(GameState::Setup))
+            )
+            .add_systems(
+                OnEnter(GameState::InGame),
+                start_jump
+            )
+            .add_systems(
+                Update,
                 (
                     (jump_space, jump_tap),
-                    apply_jump.run_if(in_state(GameState::InGame))
+                    apply_jump
                 )
-                    .chain(),
+                    .chain()
+                    .run_if(in_state(GameState::InGame)),
             )
             .add_event::<JumpEvent>();
     }
@@ -32,6 +41,21 @@ impl Jump {
     pub fn new(speed: f32) -> Self {
         Self { speed }
     }
+}
+
+fn start_game(
+    keyboard_input: Res<Input<KeyCode>>,
+    mut next_state: ResMut<NextState<GameState>>
+) {
+    if keyboard_input.just_pressed(KeyCode::Space) {
+        next_state.set(GameState::InGame)
+    }
+}
+
+fn start_jump(
+    mut jump_event_writer: EventWriter<JumpEvent>
+) {
+    jump_event_writer.send(JumpEvent)
 }
 
 fn jump_space(
