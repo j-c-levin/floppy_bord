@@ -8,6 +8,7 @@ mod window;
 mod despawn;
 mod rock;
 mod debug;
+mod background;
 
 use bevy::prelude::*;
 use crate::bird::BirdPlugin;
@@ -21,6 +22,7 @@ use crate::window::WindowPlugin;
 #[allow(unused_imports)]
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_xpbd_2d::prelude::*;
+use crate::background::BackgroundPlugin;
 #[allow(unused_imports)]
 use crate::debug::DebugPlugin;
 
@@ -34,10 +36,11 @@ fn main() {
         .add_plugins(InputPlugin)
         .add_plugins(StatePlugin)
         .add_plugins(RockPlugin)
-        // debug plugins
-        // .add_plugins(WorldInspectorPlugin::new())
+        .add_plugins(BackgroundPlugin)
         .add_plugins(PhysicsPlugins::default())
-        .add_plugins(PhysicsDebugPlugin::default())
+        // debug plugins
+        // .add_plugins(PhysicsDebugPlugin::default())
+        // .add_plugins(WorldInspectorPlugin::new())
         // .add_plugins(DebugPlugin)
         .run();
 }
