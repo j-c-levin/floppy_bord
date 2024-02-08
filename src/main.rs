@@ -7,6 +7,7 @@ mod state;
 mod window;
 mod despawn;
 mod rock;
+mod debug;
 
 use bevy::prelude::*;
 use crate::bird::BirdPlugin;
@@ -19,6 +20,7 @@ use crate::state::StatePlugin;
 use crate::window::WindowPlugin;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_xpbd_2d::prelude::*;
+use crate::debug::DebugPlugin;
 
 fn main() {
     App::new()
@@ -34,5 +36,6 @@ fn main() {
         .add_plugins(WorldInspectorPlugin::new())
         .add_plugins(PhysicsPlugins::default())
         .add_plugins(PhysicsDebugPlugin::default())
+        .add_plugins(DebugPlugin)
         .run();
 }

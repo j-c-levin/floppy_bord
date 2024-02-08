@@ -78,7 +78,7 @@ fn setup(
         Velocity::new(Vec2::ZERO),
         Jump::new(JUMP_SPEED),
         Name::new("Bord"),
-        Collider::ball(3.0)
+        Collider::ball(6.0)
     ));
 }
 
