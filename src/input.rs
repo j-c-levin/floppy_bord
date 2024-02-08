@@ -5,6 +5,20 @@ use crate::state::GameState;
 
 pub struct InputPlugin;
 
+#[derive(Event)]
+pub struct JumpEvent;
+
+#[derive(Component)]
+pub struct Jump {
+    speed: f32,
+}
+
+impl Jump {
+    pub fn new(speed: f32) -> Self {
+        Self { speed }
+    }
+}
+
 impl Plugin for InputPlugin {
     fn build(&self, app: &mut App) {
         app
@@ -19,27 +33,13 @@ impl Plugin for InputPlugin {
             .add_systems(
                 Update,
                 (
-                    (jump_space, jump_tap),
+                    (jump_space, jump_tap, pause_game),
                     apply_jump
                 )
                     .chain()
                     .run_if(in_state(GameState::InGame)),
             )
             .add_event::<JumpEvent>();
-    }
-}
-
-#[derive(Event)]
-pub struct JumpEvent;
-
-#[derive(Component)]
-pub struct Jump {
-    speed: f32,
-}
-
-impl Jump {
-    pub fn new(speed: f32) -> Self {
-        Self { speed }
     }
 }
 
@@ -192,5 +192,18 @@ fn apply_jump(
 
     for _ in jump_event_reader.read() {
         velocity.velocity.y = jump.speed;
+    }
+}
+
+fn pause_game(
+    keyboard_input: Res<Input<KeyCode>>,
+    mut time: ResMut<Time<Virtual>>
+) {
+    if keyboard_input.just_pressed(KeyCode::P) {
+        if time.is_paused() {
+            time.unpause();
+        } else {
+            time.pause();
+        }
     }
 }

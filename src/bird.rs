@@ -1,5 +1,6 @@
 use std::usize;
 use bevy::prelude::*;
+use bevy_xpbd_2d::prelude::*;
 use crate::gravity::{Gravity, Velocity};
 use crate::input::Jump;
 use crate::state::GameState;
@@ -37,7 +38,7 @@ impl Plugin for BirdPlugin {
                 Update,
                 (
                     lost_bird,
-                    (animate_sprite, rotate_bird)
+                    (animate_sprite, rotate_bird, get_collisions)
                 )
                     .chain()
                     .run_if(in_state(GameState::InGame)),
@@ -76,7 +77,8 @@ fn setup(
         Gravity::new(Vec2::new(0.0, BIRD_GRAVITY)),
         Velocity::new(Vec2::ZERO),
         Jump::new(JUMP_SPEED),
-        Name::new("Bord")
+        Name::new("Bord"),
+        Collider::ball(3.0)
     ));
 }
 
@@ -147,5 +149,17 @@ fn lost_bird(
     if distance > BIRD_DESPAWN_DISTANCE {
         commands.entity(entity).despawn_recursive();
         next_state.set(GameState::GameOver);
+    }
+}
+
+fn get_collisions(
+    mut collision_event_reader: EventReader<Collision>
+) {
+    for Collision(contacts) in collision_event_reader.read() {
+        println!(
+            "entities {:?} and {:?} are colliding",
+            contacts.entity1,
+            contacts.entity2
+        );
     }
 }

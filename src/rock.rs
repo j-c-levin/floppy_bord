@@ -1,7 +1,9 @@
+use std::time::Duration;
 use bevy::prelude::*;
 use crate::gravity::Velocity;
 use crate::state::GameState;
 use rand::Rng;
+use bevy_xpbd_2d::prelude::*;
 
 pub struct RockPlugin;
 
@@ -26,9 +28,16 @@ impl Plugin for RockPlugin {
             .insert_resource(SpawnTimer {
                 timer: Timer::from_seconds(SPAWN_TIME_SECONDS, TimerMode::Repeating)
             })
+            .add_systems(OnEnter(GameState::InGame), start_spawn)
             .add_systems(Update, spawn_rocks_on_timer.run_if(in_state(GameState::InGame)))
             .add_systems(OnEnter(GameState::GameOver), (despawn_rocks, reset_timer));
     }
+}
+
+fn start_spawn(
+    mut timer: ResMut<SpawnTimer>
+) {
+    timer.timer.tick(Duration::from_secs((SPAWN_TIME_SECONDS - 0.1) as u64));
 }
 
 fn spawn_rocks_on_timer(
@@ -54,7 +63,7 @@ fn spawn_rocks_on_timer(
     command.spawn(rock_bundle(false, handle.clone(), random_y));
 }
 
-fn rock_bundle(bottom: bool, texture: Handle<Image>, random_y: f32) -> (Rock, Velocity, SpriteBundle, Name) {
+fn rock_bundle(bottom: bool, texture: Handle<Image>, random_y: f32) -> (Rock, Velocity, SpriteBundle, Name, Collider) {
     let position = if bottom { random_y } else { random_y + ROCK_GAP };
     let name = if bottom { "bottom_rock" } else { "top_rock" };
 
@@ -74,7 +83,8 @@ fn rock_bundle(bottom: bool, texture: Handle<Image>, random_y: f32) -> (Rock, Ve
             },
             ..default()
         },
-        Name::new(name)
+        Name::new(name),
+        Collider::cuboid(1.0, ROCK_Y_SCALE)
     )
 }
 

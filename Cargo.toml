@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 bevy = "0.12.1"
 bevy-inspector-egui = "0.22.1"
+bevy_xpbd_2d = "0.3.3"
 rand = "0.8.5"
 
 # Enable a small amount of optimization in debug mode
