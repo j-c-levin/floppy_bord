@@ -61,9 +61,13 @@ fn tile_background(
     });
 
     if should_tile {
+        let max_x = query.iter().max_by(|&x, &y| {
+            return x.translation().x.total_cmp(&y.translation().x);
+        }).unwrap().translation().x;
+
         commands.spawn((
             SpriteBundle {
-                transform: Transform::from_xyz(TILE_SPAWN_X, 0.0, -1.0)
+                transform: Transform::from_xyz(max_x + TILE_SPAWN_X - 1.0, 0.0, -1.0)
                     .with_scale(Vec3::new(1.0, 1.7, 1.0)),
                 texture: asset_server.load("background.png"),
                 ..default()
