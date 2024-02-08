@@ -38,9 +38,11 @@ fn main() {
         .add_plugins(RockPlugin)
         .add_plugins(BackgroundPlugin)
         .add_plugins(PhysicsPlugins::default())
+
         // debug plugins
-        // .add_plugins(PhysicsDebugPlugin::default())
         // .add_plugins(WorldInspectorPlugin::new())
+        // .add_plugins(PhysicsDebugPlugin::default())
         // .add_plugins(DebugPlugin)
+
         .run();
 }
