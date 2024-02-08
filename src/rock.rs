@@ -1,5 +1,6 @@
 use std::time::Duration;
 use bevy::prelude::*;
+use bevy_xpbd_2d::math::Vector;
 use crate::gravity::Velocity;
 use crate::state::GameState;
 use rand::Rng;
@@ -14,6 +15,7 @@ pub struct Rock;
 struct SpawnTimer {
     timer: Timer,
 }
+
 const SPAWN_TIME_SECONDS: f32 = 3.0;
 const ROCK_X: f32 = 300.0;
 const ROCK_Y_HIGH: f32 = -94.0;
@@ -66,6 +68,7 @@ fn spawn_rocks_on_timer(
 fn rock_bundle(bottom: bool, texture: Handle<Image>, random_y: f32) -> (Rock, Velocity, SpriteBundle, Name, Collider) {
     let position = if bottom { random_y } else { random_y + ROCK_GAP };
     let name = if bottom { "bottom_rock" } else { "top_rock" };
+    let sign = if bottom { 1.0 } else { -1.0 };
 
     (
         Rock,
@@ -84,7 +87,7 @@ fn rock_bundle(bottom: bool, texture: Handle<Image>, random_y: f32) -> (Rock, Ve
             ..default()
         },
         Name::new(name),
-        Collider::cuboid(1.0, ROCK_Y_SCALE)
+        Collider::triangle(Vector::new(-55.0 * sign, -118.0 * sign), Vector::new(55.0 * sign, -118.0 * sign), Vector::new(13.0, 120.0 * sign))
     )
 }
 

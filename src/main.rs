@@ -18,8 +18,10 @@ use crate::quit::QuitPlugin;
 use crate::rock::RockPlugin;
 use crate::state::StatePlugin;
 use crate::window::WindowPlugin;
+#[allow(unused_imports)]
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_xpbd_2d::prelude::*;
+#[allow(unused_imports)]
 use crate::debug::DebugPlugin;
 
 fn main() {
@@ -33,9 +35,9 @@ fn main() {
         .add_plugins(StatePlugin)
         .add_plugins(RockPlugin)
         // debug plugins
-        .add_plugins(WorldInspectorPlugin::new())
+        // .add_plugins(WorldInspectorPlugin::new())
         .add_plugins(PhysicsPlugins::default())
-        .add_plugins(PhysicsDebugPlugin::default())
-        .add_plugins(DebugPlugin)
+        // .add_plugins(PhysicsDebugPlugin::default())
+        // .add_plugins(DebugPlugin)
         .run();
 }

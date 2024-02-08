@@ -153,13 +153,23 @@ fn lost_bird(
 }
 
 fn get_collisions(
-    mut collision_event_reader: EventReader<Collision>
+    mut commands: Commands,
+    mut collision_event_reader: EventReader<Collision>,
+    mut next_state: ResMut<NextState<GameState>>,
+    bird: Query<Entity, With<Gravity>>
 ) {
-    for Collision(contacts) in collision_event_reader.read() {
-        println!(
-            "entities {:?} and {:?} are colliding",
-            contacts.entity1,
-            contacts.entity2
-        );
+    let Ok(bird) = bird.get_single() else {
+        println!("get_collisions: expected bird but found none!");
+        return;
+    };
+
+    for Collision(entity) in collision_event_reader.read() {
+        if entity.entity1 == bird {
+            commands.entity(entity.entity1).despawn_recursive();
+            next_state.set(GameState::GameOver);
+        } else if entity.entity2 == bird {
+            commands.entity(entity.entity2).despawn_recursive();
+            next_state.set(GameState::GameOver);
+        }
     }
 }
