@@ -14,8 +14,7 @@ impl Plugin for DebugPlugin {
 
 fn spawn_debug(
     mut command: Commands,
-    asset_server: Res<AssetServer>,
-    assets: Res<Assets<Image>>
+    asset_server: Res<AssetServer>
 ) {
     command.spawn((
         Rock,
@@ -27,9 +26,15 @@ fn spawn_debug(
                 ..default()
             },
             texture: asset_server.load("rockGrass.png"),
+            sprite: Sprite {
+                flip_y: true,
+                ..default()
+            },
             ..default()
         },
         Name::new("test_rock"),
-        Collider::triangle(Vector::new(-70.0, -120.0), Vector::new(100.0, 100.0), Vector::new(0.0, 100.0))
+        Collider::triangle(Vector::new(55.0, 118.0), Vector::new(-55.0, 118.0), Vector::new(13.0, -120.0))
     ));
 }
+// Vector::new(-55.0, -118.0), Vector::new(55.0, -118.0), Vector::new(13.0, 120.0) - bottom
+// Vector::new(55.0, 118.0), Vector::new(-55.0, 118.0), Vector::new(13.0, -120.0) - top
