@@ -23,6 +23,7 @@ const ROCK_Y_LOW: f32 = -650.0;
 const ROCK_SPEED: f32 = -120.0;
 const ROCK_Y_SCALE: f32 = 2.6;
 const ROCK_GAP: f32 = 770.0;
+const ROCK_DESPAWN_X: f32 = -400.0;
 
 impl Plugin for RockPlugin {
     fn build(&self, app: &mut App) {
@@ -31,7 +32,7 @@ impl Plugin for RockPlugin {
                 timer: Timer::from_seconds(SPAWN_TIME_SECONDS, TimerMode::Repeating)
             })
             .add_systems(OnEnter(GameState::InGame), start_spawn)
-            .add_systems(Update, spawn_rocks_on_timer.run_if(in_state(GameState::InGame)))
+            .add_systems(Update, (spawn_rocks_on_timer, lost_rock).run_if(in_state(GameState::InGame)))
             .add_systems(OnEnter(GameState::GameOver), (despawn_rocks, reset_timer));
     }
 }
@@ -103,5 +104,16 @@ fn despawn_rocks(
 ) {
     for entity in rocks.iter() {
         command.entity(entity).despawn_recursive();
+    }
+}
+
+fn lost_rock(
+    mut commands: Commands,
+    rocks: Query<(&GlobalTransform, Entity), With<Rock>>,
+) {
+    for (transform, entity) in rocks.iter() {
+        if transform.translation().x < ROCK_DESPAWN_X {
+            commands.entity(entity).despawn_recursive();
+        }
     }
 }

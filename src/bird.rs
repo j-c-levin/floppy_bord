@@ -69,7 +69,7 @@ fn setup(
         SpriteSheetBundle {
             sprite: TextureAtlasSprite::new(animation_indices.first),
             texture_atlas: texture_atlas_handle,
-            transform: Transform::from_scale(Vec3::splat(3.0)),
+            transform: Transform::default().with_scale(Vec3::splat(3.0)).with_translation(Vec3::new(-100.0, 0.0, 0.0)),
             ..default()
         },
         animation_indices,

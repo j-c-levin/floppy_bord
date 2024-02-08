@@ -39,6 +39,7 @@ impl Plugin for InputPlugin {
                     .chain()
                     .run_if(in_state(GameState::InGame)),
             )
+            .add_systems(OnEnter(GameState::GameOver), clear_input_on_game_end)
             .add_event::<JumpEvent>();
     }
 }
@@ -206,4 +207,10 @@ fn pause_game(
             time.pause();
         }
     }
+}
+
+fn clear_input_on_game_end(
+    mut events: ResMut<Events<JumpEvent>>
+) {
+    events.clear();
 }
