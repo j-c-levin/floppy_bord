@@ -44,7 +44,7 @@ fn main() {
         .add_plugins(ScorePlugin)
         // debug plugins
         // .add_plugins(WorldInspectorPlugin::new())
-        .add_plugins(PhysicsDebugPlugin::default())
+        // .add_plugins(PhysicsDebugPlugin::default())
         // .add_plugins(DebugPlugin)
 
         .run();
