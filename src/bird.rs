@@ -1,8 +1,11 @@
 use std::usize;
 use bevy::prelude::*;
 use bevy_xpbd_2d::prelude::*;
+use crate::collision_layers::Layer;
 use crate::gravity::{Gravity, Velocity};
 use crate::input::Jump;
+use crate::rock::Score;
+use crate::score::PlayerScore;
 use crate::state::GameState;
 
 pub struct BirdPlugin;
@@ -78,7 +81,8 @@ fn setup(
         Velocity::new(Vec2::ZERO),
         Jump::new(JUMP_SPEED),
         Name::new("Bord"),
-        Collider::ball(6.0)
+        Collider::ball(6.0),
+        CollisionLayers::new([Layer::Bird], [Layer::Score, Layer::Rock]),
     ));
 }
 
@@ -156,20 +160,29 @@ fn get_collisions(
     mut commands: Commands,
     mut collision_event_reader: EventReader<Collision>,
     mut next_state: ResMut<NextState<GameState>>,
-    bird: Query<Entity, With<Gravity>>
+    bird: Query<Entity, With<Gravity>>,
+    score: Query<Entity, With<Score>>,
+    mut player_score: ResMut<PlayerScore>
 ) {
-    let Ok(bird) = bird.get_single() else {
-        println!("get_collisions: expected bird but found none!");
-        return;
-    };
-
     for Collision(entity) in collision_event_reader.read() {
-        if entity.entity1 == bird {
-            commands.entity(entity.entity1).despawn_recursive();
-            next_state.set(GameState::GameOver);
-        } else if entity.entity2 == bird {
-            commands.entity(entity.entity2).despawn_recursive();
-            next_state.set(GameState::GameOver);
+        // increment player score
+        if score.get(entity.entity1).is_ok(){
+            commands.entity(entity.entity1).remove::<Collider>();
+            player_score.score += 1;
+            return;
+        } else if score.get(entity.entity2).is_ok() {
+            commands.entity(entity.entity2).remove::<Collider>();
+            player_score.score += 1;
+            return;
         }
+
+        // player has hit a rock, end the game
+        if bird.get(entity.entity1).is_ok() {
+            commands.entity(entity.entity1).despawn_recursive();
+        } else if bird.get(entity.entity2).is_ok() {
+            commands.entity(entity.entity2).despawn_recursive();
+        }
+
+        next_state.set(GameState::GameOver);
     }
 }

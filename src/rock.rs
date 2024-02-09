@@ -5,6 +5,7 @@ use crate::gravity::Velocity;
 use crate::state::GameState;
 use rand::Rng;
 use bevy_xpbd_2d::prelude::*;
+use crate::collision_layers::Layer;
 
 pub struct RockPlugin;
 
@@ -15,6 +16,9 @@ pub struct Rock;
 struct SpawnTimer {
     timer: Timer,
 }
+
+#[derive(Component)]
+pub struct Score;
 
 const SPAWN_TIME_SECONDS: f32 = 2.8;
 const ROCK_X: f32 = 280.0;
@@ -33,7 +37,7 @@ impl Plugin for RockPlugin {
             })
             .add_systems(OnEnter(GameState::InGame), start_spawn)
             .add_systems(Update, (spawn_rocks_on_timer, lost_rock).run_if(in_state(GameState::InGame)))
-            .add_systems(OnEnter(GameState::GameOver), (despawn_rocks, reset_timer));
+            .add_systems(OnEnter(GameState::GameOver), (despawn_rocks, despawn_score_colliders, reset_timer));
     }
 }
 
@@ -64,9 +68,24 @@ fn spawn_rocks_on_timer(
 
     // spawn top rock
     command.spawn(rock_bundle(false, handle.clone(), random_y));
+
+    // spawn score collider
+    command.spawn((
+        Collider::cuboid(2.0, 800.0),
+        Velocity {
+            velocity: Vec2::from((ROCK_SPEED, 0.0))
+        },
+        Transform {
+            translation: Vec3::new(ROCK_X + 12.0, 0.0, 0.0),
+            ..default()
+        },
+        GlobalTransform::default(),
+        Score,
+        CollisionLayers::new([Layer::Score], [Layer::Bird]),
+    ));
 }
 
-fn rock_bundle(bottom: bool, texture: Handle<Image>, random_y: f32) -> (Rock, Velocity, SpriteBundle, Name, Collider) {
+fn rock_bundle(bottom: bool, texture: Handle<Image>, random_y: f32) -> (Rock, Velocity, SpriteBundle, Name, Collider, CollisionLayers) {
     let position = if bottom { random_y } else { random_y + ROCK_GAP };
     let name = if bottom { "bottom_rock" } else { "top_rock" };
     let sign = if bottom { 1.0 } else { -1.0 };
@@ -88,7 +107,8 @@ fn rock_bundle(bottom: bool, texture: Handle<Image>, random_y: f32) -> (Rock, Ve
             ..default()
         },
         Name::new(name),
-        Collider::triangle(Vector::new(-55.0 * sign, -118.0 * sign), Vector::new(55.0 * sign, -118.0 * sign), Vector::new(13.0, 120.0 * sign))
+        Collider::triangle(Vector::new(-55.0 * sign, -118.0 * sign), Vector::new(55.0 * sign, -118.0 * sign), Vector::new(13.0, 120.0 * sign)),
+        CollisionLayers::new([Layer::Rock], [Layer::Bird]),
     )
 }
 
@@ -101,6 +121,15 @@ fn reset_timer(
 fn despawn_rocks(
     mut command: Commands,
     rocks: Query<Entity, With<Rock>>,
+) {
+    for entity in rocks.iter() {
+        command.entity(entity).despawn_recursive();
+    }
+}
+
+fn despawn_score_colliders(
+    mut command: Commands,
+    rocks: Query<Entity, With<Score>>,
 ) {
     for entity in rocks.iter() {
         command.entity(entity).despawn_recursive();

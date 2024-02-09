@@ -9,6 +9,8 @@ mod despawn;
 mod rock;
 mod debug;
 mod background;
+mod collision_layers;
+mod score;
 
 use bevy::prelude::*;
 use crate::bird::BirdPlugin;
@@ -25,6 +27,7 @@ use bevy_xpbd_2d::prelude::*;
 use crate::background::BackgroundPlugin;
 #[allow(unused_imports)]
 use crate::debug::DebugPlugin;
+use crate::score::ScorePlugin;
 
 fn main() {
     App::new()
@@ -38,10 +41,10 @@ fn main() {
         .add_plugins(RockPlugin)
         .add_plugins(BackgroundPlugin)
         .add_plugins(PhysicsPlugins::default())
-
+        .add_plugins(ScorePlugin)
         // debug plugins
         // .add_plugins(WorldInspectorPlugin::new())
-        // .add_plugins(PhysicsDebugPlugin::default())
+        .add_plugins(PhysicsDebugPlugin::default())
         // .add_plugins(DebugPlugin)
 
         .run();

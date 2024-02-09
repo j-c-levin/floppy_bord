@@ -1,6 +1,7 @@
 use bevy::input::touch::TouchPhase;
 use bevy::prelude::*;
 use crate::gravity::{Gravity, Velocity};
+use crate::score::PlayerScore;
 use crate::state::GameState;
 
 pub struct InputPlugin;
@@ -46,10 +47,22 @@ impl Plugin for InputPlugin {
 
 fn start_game(
     keyboard_input: Res<Input<KeyCode>>,
-    mut next_state: ResMut<NextState<GameState>>
+    mut touches: EventReader<TouchInput>,
+    mut next_state: ResMut<NextState<GameState>>,
+    mut player_score: ResMut<PlayerScore>
 ) {
     if keyboard_input.just_pressed(KeyCode::Space) {
-        next_state.set(GameState::InGame)
+        next_state.set(GameState::InGame);
+        player_score.score = 0;
+    }
+    for touch in touches.read() {
+        match touch.phase {
+            TouchPhase::Started => {
+                next_state.set(GameState::InGame);
+                player_score.score = 0;
+            }
+            _ => { /* do nothing */ }
+        }
     }
 }
 
