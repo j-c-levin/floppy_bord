@@ -19,6 +19,7 @@ impl Plugin for WindowPlugin {
                             maximize: false,
                             ..Default::default()
                         },
+                        fit_canvas_to_parent: true,
                         ..default()
                     }),
                     ..default()
