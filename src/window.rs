@@ -15,7 +15,6 @@ impl Plugin for WindowPlugin {
                     primary_window: Some(Window {
                         title: "Floppy Bord".into(),
                         resolution: (500., 800.).into(),
-                        position: WindowPosition::At(IVec2::from((10, 10))),
                         enabled_buttons: bevy::window::EnabledButtons {
                             maximize: false,
                             ..Default::default()
