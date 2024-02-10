@@ -14,7 +14,7 @@ impl Plugin for WindowPlugin {
                 .set(bevy::prelude::WindowPlugin {
                     primary_window: Some(Window {
                         title: "Floppy Bord".into(),
-                        resolution: (500., 800.).into(),
+                        resolution: (500., 700.).into(),
                         enabled_buttons: bevy::window::EnabledButtons {
                             maximize: false,
                             ..Default::default()

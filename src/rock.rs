@@ -22,9 +22,9 @@ pub struct Score;
 
 const SPAWN_TIME_SECONDS: f32 = 2.8;
 const ROCK_X: f32 = 280.0;
-const ROCK_Y_HIGH: f32 = -94.0;
-const ROCK_Y_LOW: f32 = -650.0;
-const ROCK_SPEED: f32 = -120.0;
+const ROCK_Y_HIGH: f32 = -138.0;
+const ROCK_Y_LOW: f32 = -610.0;
+const ROCK_SPEED: f32 = -130.0;
 const ROCK_Y_SCALE: f32 = 2.6;
 const ROCK_GAP: f32 = 770.0;
 const ROCK_DESPAWN_X: f32 = -400.0;
